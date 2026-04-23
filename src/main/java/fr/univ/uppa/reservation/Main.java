@@ -7,10 +7,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         ReservationService service = new ReservationService();
+        ReservationCsvStore store = new ReservationCsvStore();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Système prêt. Commandes : resources, reserve, reservations, cancel, quit");
-
+        System.out.println("Système prêt. Commandes : resources, reserve, reservations, cancel, findByUser, findByResource, save, load, quit");
         while (true) {
             // Lire une ligne utilisateur 
             String line = scanner.nextLine().trim();
@@ -60,6 +60,24 @@ public class Main {
                 } else {
                     System.out.println("ERR " + result.error() + " introuvable");
                 }
+                } else if (command.equals("findByUser")) {
+                String user = parts[1];
+                List<Reservation> found = service.findByUser(user);
+                System.out.println("OK count=" + found.size());
+
+                } else if (command.equals("findByResource")) {
+                long resId = Long.parseLong(parts[1]);
+                List<Reservation> found = service.findByResource(resId);
+                System.out.println("OK count=" + found.size());
+
+                } else if (command.equals("save")) {
+                store.save("reservations.csv", service.listReservations());
+                System.out.println("OK saved");
+
+                } else if (command.equals("load")) {
+                List<Reservation> loaded = store.load("reservations.csv");
+                service.replaceReservations(loaded);
+                System.out.println("OK loaded count=" + loaded.size());
 
             } else {
                 System.out.println("ERR COMMANDE_INCONNUE");

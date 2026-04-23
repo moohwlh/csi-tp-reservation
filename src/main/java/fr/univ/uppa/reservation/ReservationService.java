@@ -53,6 +53,42 @@ public final class ReservationService {
         // Si on  trouve pas l'ID
         return Result.fail(ErrorCode.NOT_FOUND);
     }
+       // TP3 TODO
+    public List<Reservation> findByUser(String user) {
+        List<Reservation> result = new ArrayList<>();
+        for (Reservation r : reservations) {
+            
+            if (r.user().equals(user)) {
+                result.add(r);
+            }
+        }
+        return result; // Retourne aussi les CANCELLED comme demandé
+    }
+
+    public List<Reservation> findByResource(long resourceId) {
+        List<Reservation> result = new ArrayList<>();
+        for (Reservation r : reservations) {
+            if (r.resourceId() == resourceId) {
+                result.add(r);
+            }
+        }
+        return result; // Retourne aussi les CANCELLED comme demandé
+    }
+
+    public void replaceReservations(List<Reservation> loadedReservations) {
+        // On vide la liste actuelle et on ajoute les nouvelles
+        reservations.clear();
+        reservations.addAll(loadedReservations);
+
+        // Recalcul indispensable de nextId 
+        long maxId = 0;
+        for (Reservation r : reservations) {
+            if (r.id() > maxId) {
+                maxId = r.id();
+            }
+        }
+        nextId = maxId + 1; // prochain Id  max + 1
+    }
 
     static boolean overlap(LocalDateTime s1, LocalDateTime e1, LocalDateTime s2, LocalDateTime e2) {
         // Pas de chevauchement sur la même ressource
